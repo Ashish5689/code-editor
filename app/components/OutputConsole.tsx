@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { ArrowPathIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 interface OutputConsoleProps {
   output: string;
@@ -16,24 +17,46 @@ const OutputConsole = ({ output, isLoading }: OutputConsoleProps) => {
     }
   }, [output]);
 
+  const hasError = output.toLowerCase().includes('error');
+
   return (
-    <div className="h-full w-full flex flex-col">
-      <div className="bg-gray-800 text-white px-4 py-2 font-medium rounded-t-md">
-        Output
+    <div className="h-full w-full flex flex-col glass-dark rounded-lg shadow-lg overflow-hidden border border-gray-700/30">
+      <div className="bg-gray-800/50 px-4 py-2 flex items-center justify-between border-b border-gray-700/30 flex-shrink-0">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium text-gray-200">Console Output</span>
+          {!isLoading && output && (
+            <span className={`flex items-center text-xs ${hasError ? 'text-red-400' : 'text-green-400'}`}>
+              {hasError ? (
+                <XCircleIcon className="h-4 w-4 mr-1" />
+              ) : (
+                <CheckCircleIcon className="h-4 w-4 mr-1" />
+              )}
+              {hasError ? 'Error' : 'Success'}
+            </span>
+          )}
+        </div>
+        <div className="text-xs text-gray-400">
+          {isLoading ? 'Processing...' : 'Ready'}
+        </div>
       </div>
       <div
         ref={consoleRef}
-        className="flex-1 bg-gray-900 text-white font-mono p-4 overflow-auto rounded-b-md"
+        className="flex-1 bg-gray-900/60 text-white font-mono p-4 overflow-auto min-h-0"
       >
         {isLoading ? (
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-            <span>Running code...</span>
+          <div className="flex items-center justify-center h-full">
+            <div className="flex flex-col items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+              <span className="text-blue-400">Executing code...</span>
+            </div>
           </div>
         ) : output ? (
           <pre className="whitespace-pre-wrap">{output}</pre>
         ) : (
-          <span className="text-gray-400">Run your code to see the output here</span>
+          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+            <ArrowPathIcon className="h-8 w-8 mb-2" />
+            <span>Run your code to see the output here</span>
+          </div>
         )}
       </div>
     </div>

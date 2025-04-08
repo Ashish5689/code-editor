@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, CodeBracketIcon, BeakerIcon, CogIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
   theme: string;
@@ -10,19 +10,41 @@ interface HeaderProps {
 
 const Header = ({ theme, toggleTheme }: HeaderProps) => {
   return (
-    <header className="w-full bg-gray-900 text-white shadow-md">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-opacity-80" style={{ background: 'var(--header-bg)' }}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-            Code Surfer
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center">
+            <CodeBracketIcon className="h-6 w-6 text-blue-500 mr-2" />
+            <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              CodeSurfer
+            </div>
           </div>
-          <span className="text-xs bg-blue-600 px-2 py-1 rounded-full">Beta</span>
+          <span className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-1 rounded-full text-white">Beta</span>
         </div>
+        
+        <nav className="hidden md:flex items-center space-x-6">
+          <a href="#" className="text-sm hover:text-blue-400 transition-colors flex items-center">
+            <BeakerIcon className="h-4 w-4 mr-1" />
+            Explore
+          </a>
+          <a href="#" className="text-sm hover:text-blue-400 transition-colors flex items-center">
+            <CogIcon className="h-4 w-4 mr-1" />
+            Settings
+          </a>
+          <a 
+            href="https://github.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm hover:text-blue-400 transition-colors"
+          >
+            GitHub
+          </a>
+        </nav>
         
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-700/50 transition-colors"
             aria-label={theme === 'vs-dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'vs-dark' ? (
@@ -32,14 +54,9 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
             )}
           </button>
           
-          <a 
-            href="https://github.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-sm hover:text-blue-400 transition-colors"
-          >
-            GitHub
-          </a>
+          <button className="hidden sm:block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
+            Sign In
+          </button>
         </div>
       </div>
     </header>
