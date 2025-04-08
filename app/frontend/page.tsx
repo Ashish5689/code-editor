@@ -16,7 +16,7 @@ interface FrontendPreviewProps {
 
 // Dynamically import the FrontendPreview component with no SSR
 const FrontendPreview = dynamic<FrontendPreviewProps>(
-  () => import('@/app/components/FrontendPreview'),
+  () => import('../components/FrontendPreview'),
   { 
     ssr: false,
     loading: () => (
@@ -28,6 +28,7 @@ const FrontendPreview = dynamic<FrontendPreviewProps>(
 );
 
 export default function FrontendPage() {
+  // Initialize with complete HTML including doctype, html, head and body tags
   const [htmlCode, setHtmlCode] = useState<string>(
     `<!DOCTYPE html>
 <html>

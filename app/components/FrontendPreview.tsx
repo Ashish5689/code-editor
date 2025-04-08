@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 
 interface FrontendPreviewProps {
@@ -10,47 +10,51 @@ interface FrontendPreviewProps {
 }
 
 const FrontendPreview = ({ htmlCode, cssCode, jsCode }: FrontendPreviewProps) => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [autoPreview, setAutoPreview] = useState<boolean>(false);
-  const [previewKey, setPreviewKey] = useState<number>(0);
+  const [autoPreview, setAutoPreview] = useState<boolean>(true);
+  const [previewContent, setPreviewContent] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
+  // Update preview when code changes and autoPreview is enabled
   useEffect(() => {
     if (autoPreview) {
       updatePreview();
     }
   }, [htmlCode, cssCode, jsCode, autoPreview]);
 
+  // Initial preview when component mounts
+  useEffect(() => {
+    updatePreview();
+  }, []);
+
   const updatePreview = () => {
-    if (!iframeRef.current) return;
-
-    const iframe = iframeRef.current;
-    const document = iframe.contentDocument;
-    
-    if (!document) return;
-
-    // Clear the iframe
-    document.open();
-    
-    // Create a complete HTML document with the user's code
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>${cssCode}</style>
-        </head>
-        <body>
-          ${extractBodyContent(htmlCode)}
-          <script>${jsCode}</script>
-        </body>
-      </html>
-    `;
-    
-    // Write the content to the iframe
-    document.write(fullHtml);
-    document.close();
-    
-    // Force a re-render of the iframe
-    setPreviewKey(prev => prev + 1);
+    try {
+      setError(null);
+      
+      // Create a complete HTML document with the user's code
+      const fullHtml = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+${cssCode}
+    </style>
+  </head>
+  <body>
+${extractBodyContent(htmlCode)}
+    <script>
+${jsCode}
+    </script>
+  </body>
+</html>
+      `.trim();
+      
+      setPreviewContent(fullHtml);
+    } catch (error) {
+      console.error('Error updating preview:', error);
+      setError(`Preview error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   // Helper function to extract body content from HTML
@@ -97,13 +101,19 @@ const FrontendPreview = ({ htmlCode, cssCode, jsCode }: FrontendPreviewProps) =>
         </div>
       </div>
       <div className="flex-1 w-full glass-dark rounded-lg shadow-lg overflow-hidden border border-gray-700/30">
-        <iframe
-          key={previewKey}
-          ref={iframeRef}
-          title="Frontend Preview"
-          className="w-full h-full bg-white"
-          sandbox="allow-scripts"
-        />
+        {error ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-800 text-red-400 p-4">
+            <p>{error}</p>
+          </div>
+        ) : (
+          <iframe
+            srcDoc={previewContent}
+            title="Frontend Preview"
+            className="w-full h-full bg-white"
+            sandbox="allow-scripts allow-same-origin"
+            loading="eager"
+          />
+        )}
       </div>
     </div>
   );
