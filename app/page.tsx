@@ -69,10 +69,19 @@ export default function Home() {
     setShowEditor(true);
   };
 
+  const goToLandingPage = () => {
+    setShowEditor(false);
+  };
+
   if (!showEditor) {
     return (
       <div className="min-h-screen gradient-animation text-white">
-        <Header theme={editorTheme} toggleTheme={toggleTheme} />
+        <Header 
+          theme={editorTheme} 
+          toggleTheme={toggleTheme} 
+          onLogoClick={goToLandingPage} 
+          showThemeToggle={false}
+        />
         
         <main className="container mx-auto px-4 py-16 md:py-24">
           <div className="flex flex-col items-center justify-center text-center">
@@ -132,7 +141,12 @@ export default function Home() {
 
   return (
     <div className={`flex flex-col min-h-screen ${editorTheme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      <Header theme={editorTheme} toggleTheme={toggleTheme} />
+      <Header 
+        theme={editorTheme} 
+        toggleTheme={toggleTheme} 
+        onLogoClick={goToLandingPage}
+        showThemeToggle={true}
+      />
       
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="flex flex-col space-y-4">
