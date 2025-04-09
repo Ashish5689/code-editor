@@ -8,7 +8,7 @@ import LanguageSelector from '../components/LanguageSelector';
 import { SUPPORTED_LANGUAGES, getDefaultCode } from '../utils/codeTemplates';
 import { executeCode } from '../services/codeExecutionService';
 import { PlayIcon, DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon, CodeBracketIcon, CommandLineIcon } from '@heroicons/react/24/solid';
-import { SunIcon, MoonIcon, LightBulbIcon, Cog6ToothIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, LightBulbIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CodePage() {
@@ -19,7 +19,6 @@ export default function CodePage() {
   const [editorTheme, setEditorTheme] = useState<string>('vs-dark');
   const [stdin, setStdin] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
-  const [showSettings, setShowSettings] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [showTips, setShowTips] = useState<boolean>(false);
@@ -130,6 +129,13 @@ export default function CodePage() {
             <h1 className={`text-2xl font-bold ${editorTheme === 'vs-dark' ? 'text-white' : 'text-gray-800'}`}>
               Code<span className="text-blue-500">Surfer</span> Editor
             </h1>
+            <div className="ml-4">
+              <LanguageSelector
+                languages={SUPPORTED_LANGUAGES}
+                selectedLanguage={selectedLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
+            </div>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -141,16 +147,6 @@ export default function CodePage() {
               title="Show Tips"
             >
               <LightBulbIcon className="h-5 w-5" />
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowSettings(!showSettings)}
-              className={`p-2 rounded-full ${editorTheme === 'vs-dark' ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'} transition-colors`}
-              title="Settings"
-            >
-              <Cog6ToothIcon className="h-5 w-5" />
             </motion.button>
             
             <motion.button
@@ -182,54 +178,6 @@ export default function CodePage() {
             </motion.button>
           </div>
         </div>
-        
-        {/* Settings panel */}
-        <AnimatePresence>
-          {showSettings && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`mb-6 rounded-xl overflow-hidden ${editorTheme === 'vs-dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-300'} shadow-lg`}
-            >
-              <div className="p-4">
-                <h3 className={`text-lg font-medium mb-3 ${editorTheme === 'vs-dark' ? 'text-white' : 'text-gray-800'}`}>Editor Settings</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Programming Language
-                    </label>
-                    <LanguageSelector
-                      languages={SUPPORTED_LANGUAGES}
-                      selectedLanguage={selectedLanguage}
-                      onLanguageChange={handleLanguageChange}
-                    />
-                  </div>
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Theme
-                    </label>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => setEditorTheme('vs-dark')}
-                        className={`px-3 py-2 rounded-md ${editorTheme === 'vs-dark' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-                      >
-                        Dark
-                      </button>
-                      <button
-                        onClick={() => setEditorTheme('vs-light')}
-                        className={`px-3 py-2 rounded-md ${editorTheme === 'vs-light' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-                      >
-                        Light
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
         
         {/* Tips panel */}
         <AnimatePresence>
