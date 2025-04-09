@@ -22,6 +22,7 @@ export default function Home() {
   const [stdin, setStdin] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
   const [showEditor, setShowEditor] = useState<boolean>(false);
+  const [isLoadingWasm, setIsLoadingWasm] = useState<boolean>(false);
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -47,12 +48,19 @@ export default function Home() {
     setOutput('');
     
     try {
+      // Show loading message for WebAssembly-based languages that might need extra loading time
+      if (['python', 'c', 'cpp', 'java', 'ruby'].includes(selectedLanguage.id)) {
+        setOutput('Preparing execution environment...');
+        setIsLoadingWasm(true);
+      }
+      
       const result = await executeCode(code, selectedLanguage.id, stdin);
       setOutput(result);
     } catch (error) {
       setOutput(`Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsExecuting(false);
+      setIsLoadingWasm(false);
     }
   };
 

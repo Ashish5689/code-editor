@@ -253,6 +253,16 @@ export async function POST(request: NextRequest) {
     
     const output = await executeCode(filePath, language, input || '');
     
+    // If we get an error about language not being installed, suggest client-side WebAssembly alternative
+    if (output.includes("is not installed on the server")) {
+      // Suggest client-side WebAssembly alternative
+      return NextResponse.json({ 
+        output: output,
+        useClientFallback: true,
+        language: language
+      });
+    }
+    
     return NextResponse.json({ output });
   } catch (error) {
     console.error('Error executing code:', error);

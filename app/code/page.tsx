@@ -22,6 +22,7 @@ export default function CodePage() {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [showTips, setShowTips] = useState<boolean>(false);
+  const [isLoadingWasm, setIsLoadingWasm] = useState<boolean>(false);
   const router = useRouter();
 
   // Set default code when language changes or component mounts
@@ -36,19 +37,25 @@ export default function CodePage() {
   const handleRunCode = async () => {
     setIsExecuting(true);
     setOutput('');
-    setExecutionTime(null);
-    
     const startTime = performance.now();
     
     try {
+      // Show loading message for WebAssembly-based languages that might need extra loading time
+      if (['python', 'c', 'cpp', 'java', 'ruby'].includes(selectedLanguage.id)) {
+        setOutput('Preparing execution environment...');
+        setIsLoadingWasm(true);
+      }
+      
       const result = await executeCode(code, selectedLanguage.id, stdin);
       setOutput(result);
-    } catch (error) {
-      setOutput(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setIsExecuting(false);
       const endTime = performance.now();
       setExecutionTime(endTime - startTime);
+    } catch (error) {
+      setOutput(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      setExecutionTime(null);
+    } finally {
+      setIsExecuting(false);
+      setIsLoadingWasm(false);
     }
   };
 
@@ -295,65 +302,62 @@ export default function CodePage() {
               )}
             </div>
             <div className="flex-1 min-h-0">
-              <OutputConsole output={output} isLoading={isExecuting} />
+              <OutputConsole 
+                output={output} 
+                isLoading={isExecuting} 
+                isLoadingWasm={isLoadingWasm}
+              />
             </div>
             
-            <div className={`border-t ${editorTheme === 'vs-dark' ? 'border-gray-700' : 'border-gray-300'}`}>
-              <button
-                onClick={() => setShowStdin(!showStdin)}
-                className={`px-4 py-2 text-sm ${editorTheme === 'vs-dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} transition-colors flex items-center`}
-              >
-                {showStdin ? 'Hide stdin' : 'Show stdin'}
-                <svg 
-                  className={`ml-1 h-4 w-4 transform transition-transform ${showStdin ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
+            <div className="flex justify-between p-2 border-t border-gray-700">
+              <div className="flex space-x-1">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleRunCode}
+                  disabled={isExecuting}
+                  className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-md transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                  <PlayIcon className="h-5 w-5" />
+                  <span>Run</span>
+                </motion.button>
+              </div>
               
-              <AnimatePresence>
-                {showStdin && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className={`p-4 ${editorTheme === 'vs-dark' ? 'bg-gray-900/60' : 'bg-gray-50'}`}>
-                      <textarea
-                        value={stdin}
-                        onChange={(e) => setStdin(e.target.value)}
-                        className={`w-full h-24 font-mono p-3 rounded-md resize-none ${
-                          editorTheme === 'vs-dark' 
-                            ? 'bg-gray-900 text-white border border-gray-700 focus:border-blue-500' 
-                            : 'bg-white text-gray-800 border border-gray-300 focus:border-blue-500'
-                        } focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                        placeholder="Enter input for your program here..."
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="flex space-x-1">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleCopyCode}
+                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+                >
+                  <DocumentDuplicateIcon className="h-5 w-5" />
+                  <span className="hidden sm:inline">Copy</span>
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleResetCode}
+                  className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+                >
+                  <ArrowPathIcon className="h-5 w-5" />
+                  <span className="hidden sm:inline">Reset</span>
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleDownloadCode}
+                  className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+                >
+                  <ArrowDownTrayIcon className="h-5 w-5" />
+                  <span className="hidden sm:inline">Download</span>
+                </motion.button>
+              </div>
             </div>
           </div>
         </div>
       </main>
-      
-      {/* Add CSS for toast notifications */}
-      <style jsx global>{`
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translateY(-20px); }
-          10% { opacity: 1; transform: translateY(0); }
-          90% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-20px); }
-        }
-        .animate-fade-in-out {
-          animation: fadeInOut 2s ease-in-out forwards;
-        }
-      `}</style>
     </div>
   );
 }
