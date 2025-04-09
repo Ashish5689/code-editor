@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserCircleIcon, ArrowRightOnRectangleIcon, HomeIcon, CodeBracketIcon, Squares2X2Icon, BeakerIcon } from '@heroicons/react/24/outline';
 
@@ -10,11 +10,20 @@ export default function Navigation({ theme, toggleTheme }: { theme: string, togg
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   // Close the mobile menu when changing routes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
+
+  // Handle frontend link click - redirect to sign in if not authenticated
+  const handleFrontendClick = (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault();
+      router.push('/auth/signin');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-opacity-80" style={{ background: 'var(--header-bg)' }}>
@@ -68,6 +77,7 @@ export default function Navigation({ theme, toggleTheme }: { theme: string, togg
           
           <Link 
             href="/frontend" 
+            onClick={handleFrontendClick}
             className={`text-sm hover:text-blue-400 transition-colors flex items-center ${
               pathname === '/frontend' || pathname.startsWith('/frontend/') ? 'text-blue-400' : ''
             }`}
@@ -160,6 +170,7 @@ export default function Navigation({ theme, toggleTheme }: { theme: string, togg
             
             <Link
               href="/frontend"
+              onClick={handleFrontendClick}
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 pathname === '/frontend' || pathname.startsWith('/frontend/')
                   ? 'bg-blue-500 text-white'
