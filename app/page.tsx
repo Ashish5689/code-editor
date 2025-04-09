@@ -11,6 +11,7 @@ import { SunIcon, MoonIcon, ChevronRightIcon, CheckCircleIcon, CommandLineIcon, 
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Home({ initialShowEditor = false }: { initialShowEditor?: boolean }) {
   const [code, setCode] = useState<string>('');
@@ -22,18 +23,20 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
   const [showStdin, setShowStdin] = useState<boolean>(false);
   const [showEditor, setShowEditor] = useState<boolean>(initialShowEditor);
   const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Set default code when language changes or component mounts
   useEffect(() => {
     setCode(getDefaultCode(selectedLanguage.id));
   }, [selectedLanguage]);
 
-  // Save editor state to localStorage
+  // Redirect to /code if showEditor is true
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('showEditor', showEditor.toString());
+    if (showEditor && pathname === '/') {
+      router.push('/code');
     }
-  }, [showEditor]);
+  }, [showEditor, router, pathname]);
 
   const handleLanguageChange = (language: typeof SUPPORTED_LANGUAGES[0]) => {
     setSelectedLanguage(language);
@@ -77,14 +80,15 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
   };
 
   const startCoding = () => {
-    setShowEditor(true);
+    router.push('/code');
   };
 
   const goToLandingPage = () => {
-    setShowEditor(false);
+    router.push('/');
   };
 
-  if (!showEditor) {
+  // Only render the landing page on the home route
+  if (pathname === '/') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
         <main className="container mx-auto px-4 py-8 md:py-16">
@@ -103,13 +107,13 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <button 
-                onClick={startCoding}
+              <Link 
+                href="/code"
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-lg transition-colors flex items-center justify-center"
               >
                 <PlayIcon className="h-5 w-5 mr-2" />
                 Start Coding
-              </button>
+              </Link>
               
               <Link 
                 href="/frontend"
@@ -156,12 +160,12 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
                 <p className="text-gray-300">
                   Write and execute code in multiple programming languages with real-time output. Perfect for testing algorithms and solving coding challenges.
                 </p>
-                <button 
-                  onClick={startCoding}
+                <Link 
+                  href="/code"
                   className="mt-4 text-blue-400 hover:text-blue-300 flex items-center text-sm font-medium"
                 >
                   Try it now <ChevronRightIcon className="h-4 w-4 ml-1" />
-                </button>
+                </Link>
               </div>
               
               {/* Feature 2 */}
@@ -226,12 +230,12 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
                     <span>Syntax highlighting and auto-completion</span>
                   </li>
                 </ul>
-                <button 
-                  onClick={startCoding}
+                <Link 
+                  href="/code"
                   className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-lg transition-colors flex items-center"
                 >
                   Start coding now <ChevronRightIcon className="h-5 w-5 ml-1" />
-                </button>
+                </Link>
               </div>
               
               <div className="bg-gray-800 bg-opacity-70 p-4 rounded-xl shadow-xl border border-gray-700">
@@ -369,12 +373,12 @@ print(f"Sum of sequence: {total}")
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 {user ? (
-                  <button 
-                    onClick={startCoding}
+                  <Link 
+                    href="/code"
                     className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-lg transition-colors"
                   >
                     Start Coding Now
-                  </button>
+                  </Link>
                 ) : (
                   <>
                     <Link 
@@ -397,7 +401,7 @@ print(f"Sum of sequence: {total}")
         </main>
         
         <footer className="py-8 bg-gray-900 border-t border-gray-800">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center mb-4 md:mb-0">
                 <CodeBracketIcon className="h-6 w-6 text-blue-500 mr-2" />
@@ -431,115 +435,19 @@ print(f"Sum of sequence: {total}")
     );
   }
 
-  return (
-    <div className={`min-h-screen ${editorTheme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Header removed as it's now in the root layout via NavigationWrapper */}
-      
-      <main className="container mx-auto px-4 py-6">
-        <div className="flex flex-col space-y-4 mb-4">
-          {/* Editor Controls - Improved layout */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="w-full sm:w-64">
-              <LanguageSelector
-                languages={SUPPORTED_LANGUAGES}
-                selectedLanguage={selectedLanguage}
-                onLanguageChange={handleLanguageChange}
-              />
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={handleRunCode}
-                disabled={isExecuting}
-                className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              >
-                <PlayIcon className="h-5 w-5" />
-                <span>Run</span>
-              </button>
-              
-              <button
-                onClick={handleCopyCode}
-                className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-              >
-                <DocumentDuplicateIcon className="h-5 w-5" />
-                <span className="hidden sm:inline">Copy</span>
-              </button>
-              
-              <button
-                onClick={handleResetCode}
-                className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-              >
-                <ArrowPathIcon className="h-5 w-5" />
-                <span className="hidden sm:inline">Reset</span>
-              </button>
-              
-              <button
-                onClick={handleDownloadCode}
-                className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-              >
-                <ArrowDownTrayIcon className="h-5 w-5" />
-                <span className="hidden sm:inline">Download</span>
-              </button>
-              
-              <button
-                onClick={toggleTheme}
-                className="p-1.5 rounded-md bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors shadow-md"
-                title={editorTheme === 'vs-dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
-              >
-                {editorTheme === 'vs-dark' ? (
-                  <SunIcon className="h-5 w-5" />
-                ) : (
-                  <MoonIcon className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
-          <div className="h-full overflow-hidden">
-            <CodeEditor
-              language={selectedLanguage.value}
-              value={code}
-              onChange={(value) => setCode(value || '')}
-              theme={editorTheme}
-            />
-          </div>
-          
-          <div className="h-full flex flex-col overflow-hidden">
-            <div className="flex-1 min-h-0">
-              <OutputConsole output={output} isLoading={isExecuting} />
-            </div>
-            
-            {showStdin && (
-              <div className="mt-4 max-h-[30%]">
-                <div className="bg-gray-800/50 px-4 py-2 font-medium rounded-t-md border-t border-l border-r border-gray-700/30">
-                  Standard Input
-                </div>
-                <textarea
-                  value={stdin}
-                  onChange={(e) => setStdin(e.target.value)}
-                  className="w-full h-32 bg-gray-900/60 text-white font-mono p-4 rounded-b-md resize-none border-b border-l border-r border-gray-700/30"
-                  placeholder="Enter input for your program here..."
-                />
-              </div>
-            )}
-            
-            <button
-              onClick={() => setShowStdin(!showStdin)}
-              className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors self-start"
-            >
-              {showStdin ? 'Hide stdin' : 'Show stdin'}
-            </button>
-          </div>
-        </div>
-      </main>
-      
-      <footer className={`py-4 text-center ${editorTheme === 'vs-dark' ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
-        <div className="container mx-auto">
-          <p> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
-        </div>
-      </footer>
-    </div>
-  );
+  // If we're not on the home route, redirect to the appropriate page
+  useEffect(() => {
+    if (pathname === '/') {
+      // We're already handling this case above
+    } else if (pathname !== '/code') {
+      // If we're not on the home or code route, don't render anything
+      // The appropriate page component will handle the rendering
+    } else {
+      // If we're on the code route, redirect to the dedicated code page
+      router.push('/code');
+    }
+  }, [pathname, router]);
+
+  // Return null while redirecting or if we're not on the home route
+  return null;
 }
