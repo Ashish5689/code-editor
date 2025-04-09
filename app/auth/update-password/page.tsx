@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import Header from '../../components/Header';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -63,7 +62,7 @@ export default function UpdatePassword() {
 
   return (
     <div className={`min-h-screen ${theme === 'vs-dark' ? 'gradient-animation' : 'bg-gray-50'} flex flex-col`}>
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      {/* Header removed to prevent duplicate navigation */}
       
       <main className="flex-grow flex items-center justify-center px-4 py-12">
         <div className={`w-full max-w-md p-8 rounded-xl shadow-lg ${theme === 'vs-dark' ? 'glass-dark' : 'bg-white'}`}>
