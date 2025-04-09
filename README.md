@@ -1,46 +1,54 @@
 # CodeSurfer - Modern Online Code Editor
 
-![CodeSurfer Logo](public/logo.png)
+<div align="center">
+  <img src="public/logo.png" alt="CodeSurfer Logo" width="100" height="100"/>
+  <h3>Code with Precision, Surf with Ease</h3>
+</div>
 
-![Code Editor Screenshot](https://via.placeholder.com/800x450.png?text=Code+Editor+Screenshot)
-Live Preview: [Link](https://code-surf.netlify.app)
+<div align="center">
+  <img src="public/Frontend.png" alt="Code Editor Screenshot" width="800" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+</div>
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://code-surf.netlify.app)
+[![GitHub Stars](https://img.shields.io/github/stars/Ashish5689/code-editor?style=social)](https://github.com/Ashish5689/code-editor)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 CodeSurfer is a powerful, feature-rich online code editor designed for developers of all skill levels. It provides a seamless coding experience with real-time execution, multi-language support, and an intuitive user interface. Whether you're learning to code, testing algorithms, or sharing solutions with colleagues, CodeSurfer offers the tools you need in a sleek, modern environment.
 
-## Why Choose CodeSurfer?
+## ✨ Why Choose CodeSurfer?
 
 ### What Sets Us Apart
 
-- **Beautiful, Intuitive Interface**: Our modern UI with customizable themes creates a distraction-free coding environment that adapts to your preferences.
-- **Lightning-Fast Execution**: Experience near-instant code execution with our optimized runtime environment.
-- **Seamless Cross-Device Experience**: Start coding on your desktop and continue on your mobile device with our responsive design.
-- **Privacy-Focused**: Your code remains private by default, and you control what you share.
-- **No Account Required for Basic Use**: Jump straight into coding without registration barriers.
-- **Open Source**: Community-driven development ensures continuous improvement and transparency.
+- **🎨 Beautiful, Intuitive Interface**: Our modern UI with customizable themes creates a distraction-free coding environment that adapts to your preferences.
+- **⚡ Lightning-Fast Execution**: Experience near-instant code execution with our optimized runtime environment.
+- **🔄 Seamless Cross-Device Experience**: Start coding on your desktop and continue on your mobile device with our responsive design.
+- **🔒 Privacy-Focused**: Your code remains private by default, and you control what you share.
+- **🚀 No Account Required for Basic Use**: Jump straight into coding without registration barriers.
+- **👨‍💻 Open Source**: Community-driven development ensures continuous improvement and transparency.
 
 ### Core Features
 
-- **Multi-Language Support**: Write and execute code in multiple programming languages including JavaScript, Python, Java, C++, Ruby, and more.
-- **Real-Time Code Execution**: Run your code instantly and see results immediately in the integrated console.
-- **Intelligent Code Editor**: Powered by Monaco Editor (the same engine behind VS Code) with syntax highlighting, auto-completion, and error detection.
-- **Customizable Environment**: Choose between light and dark themes to reduce eye strain during long coding sessions.
-- **Responsive Design**: Optimized for both desktop and mobile devices, allowing you to code anywhere.
+- **🌐 Multi-Language Support**: Write and execute code in multiple programming languages including JavaScript, Python, Java, C++, Ruby, and more.
+- **⏱️ Real-Time Code Execution**: Run your code instantly and see results immediately in the integrated console.
+- **🧠 Intelligent Code Editor**: Powered by Monaco Editor (the same engine behind VS Code) with syntax highlighting, auto-completion, and error detection.
+- **🌓 Customizable Environment**: Choose between light and dark themes to reduce eye strain during long coding sessions.
+- **📱 Responsive Design**: Optimized for both desktop and mobile devices, allowing you to code anywhere.
 
 ### Additional Features
-- **Save/Load Functionality**: Save your code and return to it later without losing your work.
-- **Security Measures**: Secure code execution with proper sandboxing to prevent malicious code execution.
-- **Downloadable Code**: Export your code as a file with a single click for offline use.
-- **Shareable Links**: Generate unique links to share your code with others, perfect for collaboration or education.
-- **User Authentication**: Secure user authentication with Supabase
+- **💾 Save/Load Functionality**: Save your code and return to it later without losing your work.
+- **🔐 Security Measures**: Secure code execution with proper sandboxing to prevent malicious code execution.
+- **📥 Downloadable Code**: Export your code as a file with a single click for offline use.
+- **🔗 Shareable Links**: Generate unique links to share your code with others, perfect for collaboration or education.
+- **🔑 User Authentication**: Secure user authentication with Supabase
   - Email/password signup and login
   - Password reset functionality
   - Protected routes for authenticated users
   - User profile management
-- **Interactive UI Elements**: Modern animations and transitions create an engaging user experience.
-- **Execution Time Display**: Track the performance of your code with built-in execution time measurement.
-- **Language-Specific Tips**: Access helpful tips and documentation specific to your chosen programming language.
+- **✨ Interactive UI Elements**: Modern animations and transitions create an engaging user experience.
+- **📊 Execution Time Display**: Track the performance of your code with built-in execution time measurement.
+- **📚 Language-Specific Tips**: Access helpful tips and documentation specific to your chosen programming language.
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 - **Frontend**:
   - Next.js 14 (React framework) for server-side rendering and optimal performance
@@ -56,7 +64,7 @@ CodeSurfer is a powerful, feature-rich online code editor designed for developer
   - API integration for code compilation and execution
   - Supabase for authentication, user management, and data storage
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 18.x or higher
@@ -79,7 +87,7 @@ CodeSurfer is a powerful, feature-rich online code editor designed for developer
    ```
 
 3. Set up environment variables:
-   Create a `.env` file in the root directory with the following variables:
+   Create a `.env.local` file in the root directory with the following variables:
    ```
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -100,7 +108,7 @@ CodeSurfer is a powerful, feature-rich online code editor designed for developer
 
 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-## Usage
+## 📖 Usage
 
 1. Select your preferred programming language from the dropdown menu
 2. Write your code in the editor panel
@@ -110,7 +118,7 @@ CodeSurfer is a powerful, feature-rich online code editor designed for developer
 6. Use the theme toggle to switch between light and dark modes
 7. Save your code or generate a shareable link as needed
 
-## Authentication Features
+## 🔐 Authentication Features
 
 The application includes a complete authentication system powered by Supabase:
 
@@ -131,12 +139,12 @@ The application includes a complete authentication system powered by Supabase:
 - View and update user profile information
 - Manage account settings
 
-## Configuration
+## ⚙️ Configuration
 
 The application can be configured through environment variables:
 
 ```
-# .env example
+# .env.local example
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -147,7 +155,7 @@ EXECUTION_API_KEY=your_api_key_here
 MAX_EXECUTION_TIME=10000
 ```
 
-## Security Considerations
+## 🛡️ Security Considerations
 
 This application implements several security measures:
 - Code execution is performed in a sandboxed environment
@@ -157,7 +165,7 @@ This application implements several security measures:
 - Passwords are securely hashed and stored
 - Protected routes ensure only authenticated users can access certain features
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -167,11 +175,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - [Monaco Editor](https://microsoft.github.io/monaco-editor/) for the powerful code editing capabilities
 - [Next.js](https://nextjs.org/) for the React framework
