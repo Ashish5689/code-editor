@@ -13,7 +13,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 
-export default function Home({ initialShowEditor = false }: { initialShowEditor?: boolean }) {
+export default function Home() {
   const [code, setCode] = useState<string>('');
   const [output, setOutput] = useState<string>('');
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
   const [editorTheme, setEditorTheme] = useState<string>('vs-dark');
   const [stdin, setStdin] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
-  const [showEditor, setShowEditor] = useState<boolean>(initialShowEditor);
+  const [showEditor, setShowEditor] = useState<boolean>(false);
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
