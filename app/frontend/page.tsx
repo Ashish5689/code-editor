@@ -262,7 +262,7 @@ button:hover {
         
         <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-200px)]">
           {/* Editor Section */}
-          <div className="flex flex-col lg:w-1/2 h-full">
+          <div className={`flex flex-col h-full overflow-hidden ${previewVisible ? 'lg:w-1/2' : 'lg:w-full'}`}>
             <div className="mb-3 flex items-center justify-between">
               <div className="flex space-x-1">
                 <button
@@ -312,7 +312,7 @@ button:hover {
               <div className="flex space-x-2">
                 <button
                   onClick={togglePreview}
-                  className={`p-1.5 rounded-md ${
+                  className={`p-1.5 rounded-md flex items-center gap-1 ${
                     editorTheme === 'vs-dark'
                       ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -326,6 +326,7 @@ button:hover {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     )}
                   </svg>
+                  <span className="text-sm hidden sm:inline">{previewVisible ? 'Hide Preview' : 'Show Preview'}</span>
                 </button>
                 
                 <button
