@@ -70,9 +70,9 @@ const Header = ({ theme, toggleTheme, onLogoClick, showThemeToggle = true }: Hea
             </button>
           )}
           
-          <button className="hidden sm:block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
+          <Link href="/auth/signin" className="hidden sm:block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
             Sign In
-          </button>
+          </Link>
         </div>
       </div>
     </header>

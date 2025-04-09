@@ -28,6 +28,11 @@ A modern, feature-rich web application that provides a multi-language code edito
 - **Security Measures**: Secure code execution with proper sandboxing
 - **Downloadable Code**: Export your code as a file
 - **Shareable Links**: Generate links to share your code with others
+- **User Authentication**: Secure user authentication with Supabase
+  - Email/password signup and login
+  - Password reset functionality
+  - Protected routes for authenticated users
+  - User profile management
 
 ## Technology Stack
 
@@ -41,12 +46,14 @@ A modern, feature-rich web application that provides a multi-language code edito
   - Next.js API routes for server-side functionality
   - Secure code execution environment
   - API integration for code compilation and execution
+  - Supabase for authentication and user management
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js 18.x or higher
 - npm or yarn package manager
+- Supabase account (for authentication features)
 
 ### Installation
 
@@ -63,14 +70,27 @@ A modern, feature-rich web application that provides a multi-language code edito
    yarn install
    ```
 
-3. Run the development server:
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory with the following variables:
+   ```
+   # Supabase Configuration
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   
+   # Code Execution Configuration
+   EXECUTION_API_KEY=your_api_key_here
+   MAX_EXECUTION_TIME=10000
+   ```
+
+4. Run the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
 ## Usage
 
@@ -82,12 +102,39 @@ A modern, feature-rich web application that provides a multi-language code edito
 6. Use the theme toggle to switch between light and dark modes
 7. Save your code or generate a shareable link as needed
 
+## Authentication Features
+
+The application includes a complete authentication system powered by Supabase:
+
+### User Registration and Login
+- Email and password-based authentication
+- Form validation with password strength requirements
+- Error handling and user feedback
+
+### Password Management
+- Secure password reset via email
+- Password update functionality for logged-in users
+
+### Protected Routes
+- Route protection for authenticated content
+- Automatic redirection to login page for unauthenticated users
+
+### User Profile
+- View and update user profile information
+- Manage account settings
+
 ## Configuration
 
 The application can be configured through environment variables:
 
 ```
 # .env.local example
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Code Execution Configuration
 EXECUTION_API_KEY=your_api_key_here
 MAX_EXECUTION_TIME=10000
 ```
@@ -98,6 +145,9 @@ This application implements several security measures:
 - Code execution is performed in a sandboxed environment
 - Resource limits are enforced to prevent abuse
 - Input validation is performed to prevent injection attacks
+- Authentication is handled securely through Supabase
+- Passwords are securely hashed and stored
+- Protected routes ensure only authenticated users can access certain features
 
 ## Contributing
 
@@ -117,3 +167,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [Monaco Editor](https://microsoft.github.io/monaco-editor/) for the powerful code editing capabilities
 - [Next.js](https://nextjs.org/) for the React framework
+- [Supabase](https://supabase.io/) for authentication and backend services
