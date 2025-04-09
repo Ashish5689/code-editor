@@ -33,7 +33,7 @@ const Header = ({ theme, toggleTheme, onLogoClick, showThemeToggle = true }: Hea
         </div>
         
         <nav className="hidden md:flex items-center space-x-6">
-          <Link href="/" className="text-sm hover:text-blue-400 transition-colors flex items-center">
+          <Link href="/code" className="text-sm hover:text-blue-400 transition-colors flex items-center">
             <CodeBracketIcon className="h-4 w-4 mr-1" />
             Code
           </Link>

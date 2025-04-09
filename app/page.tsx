@@ -9,7 +9,7 @@ import { SUPPORTED_LANGUAGES, getDefaultCode } from './utils/codeTemplates';
 import { executeCode } from './services/codeExecutionService';
 import { PlayIcon, DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
 
-export default function Home() {
+export default function Home({ initialShowEditor = false }: { initialShowEditor?: boolean }) {
   const [code, setCode] = useState<string>('');
   const [output, setOutput] = useState<string>('');
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
@@ -17,12 +17,19 @@ export default function Home() {
   const [editorTheme, setEditorTheme] = useState<string>('vs-dark');
   const [stdin, setStdin] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
-  const [showEditor, setShowEditor] = useState<boolean>(false);
+  const [showEditor, setShowEditor] = useState<boolean>(initialShowEditor);
 
-  // Set default code when language changes
+  // Set default code when language changes or component mounts
   useEffect(() => {
     setCode(getDefaultCode(selectedLanguage.id));
   }, [selectedLanguage]);
+
+  // Save editor state to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('showEditor', showEditor.toString());
+    }
+  }, [showEditor]);
 
   const handleLanguageChange = (language: typeof SUPPORTED_LANGUAGES[0]) => {
     setSelectedLanguage(language);
