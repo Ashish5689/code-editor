@@ -1,53 +1,60 @@
-# Code Editor and Compiler
+# CodeSurfer - Modern Online Code Editor
 
-A modern, feature-rich web application that provides a multi-language code editor and compiler environment. This application allows users to write, edit, and execute code in multiple programming languages directly in the browser.
+![CodeSurfer Logo](public/logo.png)
 
 ![Code Editor Screenshot](https://via.placeholder.com/800x450.png?text=Code+Editor+Screenshot)
 Live Preview: [Link](https://code-surf.netlify.app)
 
-## Features
+CodeSurfer is a powerful, feature-rich online code editor designed for developers of all skill levels. It provides a seamless coding experience with real-time execution, multi-language support, and an intuitive user interface. Whether you're learning to code, testing algorithms, or sharing solutions with colleagues, CodeSurfer offers the tools you need in a sleek, modern environment.
+
+## Why Choose CodeSurfer?
+
+### What Sets Us Apart
+
+- **Beautiful, Intuitive Interface**: Our modern UI with customizable themes creates a distraction-free coding environment that adapts to your preferences.
+- **Lightning-Fast Execution**: Experience near-instant code execution with our optimized runtime environment.
+- **Seamless Cross-Device Experience**: Start coding on your desktop and continue on your mobile device with our responsive design.
+- **Privacy-Focused**: Your code remains private by default, and you control what you share.
+- **No Account Required for Basic Use**: Jump straight into coding without registration barriers.
+- **Open Source**: Community-driven development ensures continuous improvement and transparency.
 
 ### Core Features
-- **Multi-language Support**: Write and execute code in JavaScript, Java, Python, C, and C++
-- **Advanced Code Editor**:
-  - Syntax highlighting for all supported languages
-  - Intelligent auto-completion
-  - Line numbers and error indicators
-  - Dark/light theme toggle
-  - Code formatting capabilities
-- **Code Execution**:
-  - Real-time compilation and execution
-  - Support for standard input (stdin)
-  - Clear output console for stdout and stderr
-- **User-friendly Interface**:
-  - Responsive design that works on desktop and mobile devices
-  - Intuitive layout with editor and output panels
-  - Easy language selection
+
+- **Multi-Language Support**: Write and execute code in multiple programming languages including JavaScript, Python, Java, C++, Ruby, and more.
+- **Real-Time Code Execution**: Run your code instantly and see results immediately in the integrated console.
+- **Intelligent Code Editor**: Powered by Monaco Editor (the same engine behind VS Code) with syntax highlighting, auto-completion, and error detection.
+- **Customizable Environment**: Choose between light and dark themes to reduce eye strain during long coding sessions.
+- **Responsive Design**: Optimized for both desktop and mobile devices, allowing you to code anywhere.
 
 ### Additional Features
-- **Save/Load Functionality**: Save your code and return to it later
-- **Security Measures**: Secure code execution with proper sandboxing
-- **Downloadable Code**: Export your code as a file
-- **Shareable Links**: Generate links to share your code with others
+- **Save/Load Functionality**: Save your code and return to it later without losing your work.
+- **Security Measures**: Secure code execution with proper sandboxing to prevent malicious code execution.
+- **Downloadable Code**: Export your code as a file with a single click for offline use.
+- **Shareable Links**: Generate unique links to share your code with others, perfect for collaboration or education.
 - **User Authentication**: Secure user authentication with Supabase
   - Email/password signup and login
   - Password reset functionality
   - Protected routes for authenticated users
   - User profile management
+- **Interactive UI Elements**: Modern animations and transitions create an engaging user experience.
+- **Execution Time Display**: Track the performance of your code with built-in execution time measurement.
+- **Language-Specific Tips**: Access helpful tips and documentation specific to your chosen programming language.
 
 ## Technology Stack
 
 - **Frontend**:
-  - Next.js 14 (React framework)
-  - TypeScript for type safety
-  - Monaco Editor for code editing capabilities
-  - Modern UI with responsive design
+  - Next.js 14 (React framework) for server-side rendering and optimal performance
+  - TypeScript for type safety and improved developer experience
+  - Monaco Editor for professional-grade code editing capabilities
+  - Framer Motion for smooth animations and transitions
+  - Tailwind CSS for responsive and customizable UI components
+  - Headless UI for accessible dropdown menus and interactive elements
   
 - **Backend**:
   - Next.js API routes for server-side functionality
-  - Secure code execution environment
+  - Secure code execution environment with resource limitations
   - API integration for code compilation and execution
-  - Supabase for authentication and user management
+  - Supabase for authentication, user management, and data storage
 
 ## Getting Started
 
@@ -60,7 +67,7 @@ Live Preview: [Link](https://code-surf.netlify.app)
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/code-editor.git
+   git clone https://github.com/Ashish5689/code-editor.git
    cd code-editor
    ```
 
@@ -72,7 +79,7 @@ Live Preview: [Link](https://code-surf.netlify.app)
    ```
 
 3. Set up environment variables:
-   Create a `.env.local` file in the root directory with the following variables:
+   Create a `.env` file in the root directory with the following variables:
    ```
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -129,7 +136,7 @@ The application includes a complete authentication system powered by Supabase:
 The application can be configured through environment variables:
 
 ```
-# .env.local example
+# .env example
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -169,3 +176,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Monaco Editor](https://microsoft.github.io/monaco-editor/) for the powerful code editing capabilities
 - [Next.js](https://nextjs.org/) for the React framework
 - [Supabase](https://supabase.io/) for authentication and backend services
+- [Framer Motion](https://www.framer.com/motion/) for smooth animations and transitions
