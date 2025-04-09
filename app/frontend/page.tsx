@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import CodeEditor from '../components/CodeEditor';
-import Header from '../components/Header';
-import { BeakerIcon, DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
+import { DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import dynamic from 'next/dynamic';
 import JSZip from 'jszip';
 
@@ -58,7 +57,8 @@ h1 {
 
 p {
   color: #666;
-  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 button {
@@ -90,13 +90,26 @@ button:hover {
 });`
   );
   
-  const [activeTab, setActiveTab] = useState<string>('html');
-  const [editorTheme, setEditorTheme] = useState<string>('vs-dark');
+  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js'>('html');
+  const [editorTheme, setEditorTheme] = useState<'vs' | 'vs-dark'>('vs-dark');
   const [previewVisible, setPreviewVisible] = useState<boolean>(true);
   
-  // Toggle editor theme between dark and light
+  // Initialize theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('editorTheme');
+    if (savedTheme === 'vs' || savedTheme === 'vs-dark') {
+      setEditorTheme(savedTheme);
+    }
+  }, []);
+  
+  // Update localStorage when theme changes
+  useEffect(() => {
+    localStorage.setItem('editorTheme', editorTheme);
+  }, [editorTheme]);
+  
+  // Toggle between light and dark themes
   const toggleTheme = () => {
-    setEditorTheme(editorTheme === 'vs-dark' ? 'vs-light' : 'vs-dark');
+    setEditorTheme(editorTheme === 'vs-dark' ? 'vs' : 'vs-dark');
   };
   
   // Copy the code from the active tab to clipboard
@@ -149,7 +162,8 @@ h1 {
 
 p {
   color: #666;
-  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 button {
@@ -184,26 +198,26 @@ button:hover {
   
   // Download the code from the active tab
   const handleDownloadCode = () => {
-    let content = '';
     let filename = '';
+    let content = '';
     
     switch (activeTab) {
       case 'html':
-        content = htmlCode;
         filename = 'index.html';
+        content = htmlCode;
         break;
       case 'css':
-        content = cssCode;
         filename = 'styles.css';
+        content = cssCode;
         break;
       case 'js':
-        content = jsCode;
         filename = 'script.js';
+        content = jsCode;
         break;
     }
     
     const element = document.createElement('a');
-    const file = new Blob([content], {type: 'text/plain'});
+    const file = new Blob([content], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
     element.download = filename;
     document.body.appendChild(element);
@@ -212,100 +226,147 @@ button:hover {
   };
   
   // Download all code files as a zip
-  const handleDownloadAll = () => {
+  const handleDownloadAll = async () => {
     const zip = new JSZip();
-    zip.file("index.html", htmlCode);
-    zip.file("styles.css", cssCode);
-    zip.file("script.js", jsCode);
     
-    zip.generateAsync({type:"blob"}).then(function(content) {
-      const element = document.createElement('a');
-      element.href = URL.createObjectURL(content);
-      element.download = "frontend-project.zip";
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-    });
+    zip.file('index.html', htmlCode);
+    zip.file('styles.css', cssCode);
+    zip.file('script.js', jsCode);
+    
+    const content = await zip.generateAsync({ type: 'blob' });
+    
+    const element = document.createElement('a');
+    element.href = URL.createObjectURL(content);
+    element.download = 'frontend-project.zip';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
-
+  
   // Toggle preview visibility
   const togglePreview = () => {
     setPreviewVisible(!previewVisible);
   };
   
   return (
-    <div className={`min-h-screen flex flex-col ${editorTheme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-100'} transition-colors duration-300`}>
-      <Header 
-        theme={editorTheme} 
-        toggleTheme={toggleTheme} 
-        showThemeToggle={true}
-      />
-      
-      <main className="container mx-auto px-4 py-6 flex-grow">
-        <div className="mb-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-            <div>
-              <h1 className={`text-3xl font-bold ${editorTheme === 'vs-dark' ? 'text-white' : 'text-gray-800'}`}>
-                Frontend Playground
-              </h1>
-              <p className={`${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                Write HTML, CSS, and JavaScript to create and preview web pages in real-time.
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={togglePreview}
-                className={`flex items-center space-x-1 ${previewVisible 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
-                  : 'bg-gray-600 hover:bg-gray-700'} 
-                  text-white px-3 py-2 rounded-md transition-colors shadow-md`}
-              >
-                <CodeBracketIcon className="h-5 w-5" />
-                <span>{previewVisible ? 'Hide Preview' : 'Show Preview'}</span>
-              </button>
-              <button
-                onClick={handleDownloadAll}
-                className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-              >
-                <BeakerIcon className="h-5 w-5" />
-                <span>Export All</span>
-              </button>
-            </div>
-          </div>
+    <div className={`min-h-screen ${editorTheme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <main className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <h1 className={`text-2xl font-bold ${editorTheme === 'vs-dark' ? 'text-white' : 'text-gray-900'}`}>
+            Frontend Playground
+          </h1>
+          <p className={`mt-1 ${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+            Create and preview HTML, CSS, and JavaScript in real-time
+          </p>
         </div>
         
-        <div className={`grid ${previewVisible ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'} gap-6`} 
-             style={{ height: 'calc(100vh - 200px)' }}>
-          {/* Code Editor Section */}
-          <div className="flex flex-col h-full overflow-hidden bg-opacity-50 rounded-lg shadow-lg">
-            <div className="flex mb-2 bg-gray-800/50 rounded-t-lg overflow-hidden border-b border-gray-700/30">
-              <button 
-                className={`px-4 py-2 font-medium transition-colors ${activeTab === 'html' 
-                  ? 'bg-blue-600 text-white' 
-                  : `${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-700'} hover:bg-gray-700/30`}`}
-                onClick={() => setActiveTab('html')}
-              >
-                HTML
-              </button>
-              <button 
-                className={`px-4 py-2 font-medium transition-colors ${activeTab === 'css' 
-                  ? 'bg-pink-600 text-white' 
-                  : `${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-700'} hover:bg-gray-700/30`}`}
-                onClick={() => setActiveTab('css')}
-              >
-                CSS
-              </button>
-              <button 
-                className={`px-4 py-2 font-medium transition-colors ${activeTab === 'js' 
-                  ? 'bg-yellow-600 text-white' 
-                  : `${editorTheme === 'vs-dark' ? 'text-gray-300' : 'text-gray-700'} hover:bg-gray-700/30`}`}
-                onClick={() => setActiveTab('js')}
-              >
-                JavaScript
-              </button>
+        <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-200px)]">
+          {/* Editor Section */}
+          <div className="flex flex-col lg:w-1/2 h-full">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex space-x-1">
+                <button
+                  onClick={() => setActiveTab('html')}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-t-md ${
+                    activeTab === 'html'
+                      ? editorTheme === 'vs-dark'
+                        ? 'bg-gray-800 text-white'
+                        : 'bg-white text-blue-600'
+                      : editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  HTML
+                </button>
+                <button
+                  onClick={() => setActiveTab('css')}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-t-md ${
+                    activeTab === 'css'
+                      ? editorTheme === 'vs-dark'
+                        ? 'bg-gray-800 text-white'
+                        : 'bg-white text-blue-600'
+                      : editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  CSS
+                </button>
+                <button
+                  onClick={() => setActiveTab('js')}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-t-md ${
+                    activeTab === 'js'
+                      ? editorTheme === 'vs-dark'
+                        ? 'bg-gray-800 text-white'
+                        : 'bg-white text-blue-600'
+                      : editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  JavaScript
+                </button>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  onClick={togglePreview}
+                  className={`p-1.5 rounded-md ${
+                    editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  title={previewVisible ? 'Hide Preview' : 'Show Preview'}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {previewVisible ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    )}
+                  </svg>
+                </button>
+                
+                <button
+                  onClick={handleDownloadAll}
+                  className={`p-1.5 rounded-md ${
+                    editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  title="Download All Files as ZIP"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                </button>
+                
+                <button
+                  onClick={toggleTheme}
+                  className={`p-1.5 rounded-md ${
+                    editorTheme === 'vs-dark'
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  title={editorTheme === 'vs-dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                >
+                  {editorTheme === 'vs-dark' ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             
-            <div className="flex-1 overflow-hidden rounded-md">
+            <div className={`flex-1 rounded-md overflow-hidden ${
+              editorTheme === 'vs-dark' ? 'bg-gray-800' : 'bg-white'
+            } shadow-lg`}>
               {activeTab === 'html' && (
                 <div className="h-full">
                   <CodeEditor
@@ -367,7 +428,7 @@ button:hover {
           
           {/* Preview Section - Only shown when previewVisible is true */}
           {previewVisible && (
-            <div className="flex flex-col h-full overflow-hidden rounded-lg shadow-lg">
+            <div className="flex flex-col h-full overflow-hidden rounded-lg shadow-lg lg:w-1/2">
               <div className={`px-4 py-2 flex items-center justify-between border-b ${editorTheme === 'vs-dark' ? 'bg-gray-800/50 border-gray-700/30' : 'bg-gray-200 border-gray-300'} rounded-t-lg`}>
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
@@ -391,12 +452,6 @@ button:hover {
           )}
         </div>
       </main>
-      
-      <footer className={`py-4 text-center ${editorTheme === 'vs-dark' ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'} mt-auto`}>
-        <div className="container mx-auto">
-          <p> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
-        </div>
-      </footer>
     </div>
   );
 }

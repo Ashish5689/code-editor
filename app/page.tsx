@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import CodeEditor from './components/CodeEditor';
 import OutputConsole from './components/OutputConsole';
 import LanguageSelector from './components/LanguageSelector';
-import Header from './components/Header';
-import Navigation from '@/components/Navigation';
 import { SUPPORTED_LANGUAGES, getDefaultCode } from './utils/codeTemplates';
 import { executeCode } from './services/codeExecutionService';
 import { PlayIcon, DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
@@ -86,7 +84,7 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
   if (!showEditor) {
     return (
       <div className="min-h-screen gradient-animation text-white">
-        <Navigation theme={editorTheme} />
+        {/* Navigation component removed as it's now in the root layout */}
         
         <main className="container mx-auto px-4 py-16 md:py-24">
           <div className="flex flex-col items-center justify-center text-center">
@@ -105,44 +103,64 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <button 
                 onClick={startCoding}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-lg transition-colors"
               >
                 Start Coding Now
               </button>
-              
-              {!user && (
-                <button 
-                  onClick={() => window.location.href = '/auth/signup'}
-                  className="bg-transparent border-2 border-white hover:bg-white/10 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all"
+              {user ? (
+                <button
+                  onClick={() => window.location.href = '/dashboard'}
+                  className="px-6 py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-md shadow-lg transition-colors"
                 >
-                  Create Account
+                  Go to Dashboard
+                </button>
+              ) : (
+                <button
+                  onClick={() => window.location.href = '/auth/signin'}
+                  className="px-6 py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-md shadow-lg transition-colors"
+                >
+                  Sign In
                 </button>
               )}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
-              {SUPPORTED_LANGUAGES.slice(0, 3).map((lang) => (
-                <div key={lang.id} className="glass p-6 rounded-xl">
-                  <div className="text-2xl mb-3 font-bold text-blue-400">{lang.name}</div>
-                  <p className="text-gray-300 mb-4">Write and execute {lang.name} code directly in your browser.</p>
-                  <button 
-                    onClick={() => {
-                      setSelectedLanguage(lang);
-                      startCoding();
-                    }}
-                    className="text-sm bg-blue-600/30 hover:bg-blue-600/50 px-4 py-2 rounded-md transition-colors"
-                  >
-                    Try {lang.name}
-                  </button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm">
+                <div className="bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <span className="text-2xl font-bold text-white">1</span>
                 </div>
-              ))}
+                <h3 className="text-xl font-semibold mb-2 text-center">Write Code</h3>
+                <p className="text-gray-300 text-center">
+                  Write code in multiple programming languages with syntax highlighting and intelligent code completion.
+                </p>
+              </div>
+              
+              <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm">
+                <div className="bg-green-500 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <span className="text-2xl font-bold text-white">2</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-center">Execute Code</h3>
+                <p className="text-gray-300 text-center">
+                  Run your code instantly in the cloud with real-time output and error handling.
+                </p>
+              </div>
+              
+              <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm">
+                <div className="bg-purple-500 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <span className="text-2xl font-bold text-white">3</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-center">Share & Save</h3>
+                <p className="text-gray-300 text-center">
+                  Save your code snippets to your account and share them with others easily.
+                </p>
+              </div>
             </div>
           </div>
         </main>
         
-        <footer className="py-8 text-center bg-black/20 backdrop-blur-sm mt-16">
+        <footer className="py-4 text-center bg-gray-800 text-gray-300 mt-16">
           <div className="container mx-auto">
-            <p className="text-gray-400"> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
+            <p> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
           </div>
         </footer>
       </div>
@@ -150,121 +168,99 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
   }
 
   return (
-    <div className={`min-h-screen ${editorTheme === 'vs-dark' ? 'gradient-animation' : 'bg-gray-50'}`}>
-      <Navigation theme={editorTheme} />
+    <div className={`min-h-screen ${editorTheme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Header removed as it's now in the root layout via NavigationWrapper */}
       
-      <div className={`container mx-auto px-4 py-4 ${editorTheme === 'vs-dark' ? 'text-white' : 'text-gray-900'}`}>
-        <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-          <div className="flex items-center">
-            <button
-              onClick={goToLandingPage}
-              className={`mr-4 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600`}
-            >
-              CodeSurfer
-            </button>
-          </div>
-        </div>
-        
-        <Header 
-          theme={editorTheme} 
-          toggleTheme={toggleTheme} 
-          onLogoClick={goToLandingPage}
-          showThemeToggle={true}
-        />
-        
-        <main className="flex-1 container mx-auto px-4 py-6">
-          <div className="flex flex-col space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
-              <div className="w-full md:w-64">
-                <LanguageSelector
-                  languages={SUPPORTED_LANGUAGES}
-                  selectedLanguage={selectedLanguage}
-                  onLanguageChange={handleLanguageChange}
-                />
-              </div>
+      <main className="container mx-auto px-4 py-6">
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <LanguageSelector
+              languages={SUPPORTED_LANGUAGES}
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={handleLanguageChange}
+            />
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={handleRunCode}
+                disabled={isExecuting}
+                className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              >
+                <PlayIcon className="h-5 w-5" />
+                <span>Run</span>
+              </button>
               
-              <div className="flex space-x-2">
-                <button
-                  onClick={handleRunCode}
-                  disabled={isExecuting}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                >
-                  <PlayIcon className="h-5 w-5" />
-                  <span>Run</span>
-                </button>
-                
-                <button
-                  onClick={handleCopyCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <DocumentDuplicateIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Copy</span>
-                </button>
-                
-                <button
-                  onClick={handleResetCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <ArrowPathIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Reset</span>
-                </button>
-                
-                <button
-                  onClick={handleDownloadCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Download</span>
-                </button>
-              </div>
+              <button
+                onClick={handleCopyCode}
+                className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+              >
+                <DocumentDuplicateIcon className="h-5 w-5" />
+                <span className="hidden sm:inline">Copy</span>
+              </button>
+              
+              <button
+                onClick={handleResetCode}
+                className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+              >
+                <ArrowPathIcon className="h-5 w-5" />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
+              
+              <button
+                onClick={handleDownloadCode}
+                className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
+              >
+                <ArrowDownTrayIcon className="h-5 w-5" />
+                <span className="hidden sm:inline">Download</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
+            <div className="h-full overflow-hidden">
+              <CodeEditor
+                language={selectedLanguage.value}
+                value={code}
+                onChange={(value) => setCode(value || '')}
+                theme={editorTheme}
+              />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
-              <div className="h-full overflow-hidden">
-                <CodeEditor
-                  language={selectedLanguage.value}
-                  value={code}
-                  onChange={(value) => setCode(value || '')}
-                  theme={editorTheme}
-                />
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="flex-1 min-h-0">
+                <OutputConsole output={output} isLoading={isExecuting} />
               </div>
               
-              <div className="h-full flex flex-col overflow-hidden">
-                <div className="flex-1 min-h-0">
-                  <OutputConsole output={output} isLoading={isExecuting} />
-                </div>
-                
-                {showStdin && (
-                  <div className="mt-4 max-h-[30%]">
-                    <div className="bg-gray-800/50 px-4 py-2 font-medium rounded-t-md border-t border-l border-r border-gray-700/30">
-                      Standard Input
-                    </div>
-                    <textarea
-                      value={stdin}
-                      onChange={(e) => setStdin(e.target.value)}
-                      className="w-full h-32 bg-gray-900/60 text-white font-mono p-4 rounded-b-md resize-none border-b border-l border-r border-gray-700/30"
-                      placeholder="Enter input for your program here..."
-                    />
+              {showStdin && (
+                <div className="mt-4 max-h-[30%]">
+                  <div className="bg-gray-800/50 px-4 py-2 font-medium rounded-t-md border-t border-l border-r border-gray-700/30">
+                    Standard Input
                   </div>
-                )}
-                
-                <button
-                  onClick={() => setShowStdin(!showStdin)}
-                  className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors self-start"
-                >
-                  {showStdin ? 'Hide stdin' : 'Show stdin'}
-                </button>
-              </div>
+                  <textarea
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    className="w-full h-32 bg-gray-900/60 text-white font-mono p-4 rounded-b-md resize-none border-b border-l border-r border-gray-700/30"
+                    placeholder="Enter input for your program here..."
+                  />
+                </div>
+              )}
+              
+              <button
+                onClick={() => setShowStdin(!showStdin)}
+                className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors self-start"
+              >
+                {showStdin ? 'Hide stdin' : 'Show stdin'}
+              </button>
             </div>
           </div>
-        </main>
-        
-        <footer className={`py-4 text-center ${editorTheme === 'vs-dark' ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
-          <div className="container mx-auto">
-            <p> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
-          </div>
-        </footer>
-      </div>
+        </div>
+      </main>
+      
+      <footer className={`py-4 text-center ${editorTheme === 'vs-dark' ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
+        <div className="container mx-auto">
+          <p> {new Date().getFullYear()} CodeSurfer | Built with Next.js and Monaco Editor</p>
+        </div>
+      </footer>
     </div>
   );
 }

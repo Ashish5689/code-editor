@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon, CodeBracketIcon, BeakerIcon, CogIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, CodeBracketIcon, BeakerIcon, CogIcon, UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   theme: string;
@@ -12,6 +13,8 @@ interface HeaderProps {
 }
 
 const Header = ({ theme, toggleTheme, onLogoClick, showThemeToggle = true }: HeaderProps) => {
+  const { user, signOut } = useAuth();
+  
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-opacity-80" style={{ background: 'var(--header-bg)' }}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -70,9 +73,25 @@ const Header = ({ theme, toggleTheme, onLogoClick, showThemeToggle = true }: Hea
             </button>
           )}
           
-          <Link href="/auth/signin" className="hidden sm:block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
-            Sign In
-          </Link>
+          {user ? (
+            <div className="flex items-center space-x-2">
+              <Link href="/profile" className="hidden sm:flex items-center text-sm hover:text-blue-400 transition-colors">
+                <UserCircleIcon className="h-5 w-5 mr-1" />
+                Profile
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="hidden sm:flex items-center bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-all"
+              >
+                <ArrowRightOnRectangleIcon className="h-4 w-4 mr-1" />
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link href="/auth/signin" className="hidden sm:block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </header>

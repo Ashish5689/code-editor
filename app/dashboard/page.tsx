@@ -20,26 +20,7 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <div className={`min-h-screen ${theme === 'vs-dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <header className={`${theme === 'vs-dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 className={`text-2xl font-bold ${theme === 'vs-dark' ? 'text-white' : 'text-gray-900'}`}>
-              Dashboard
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className={`text-sm ${theme === 'vs-dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                {user?.email}
-              </span>
-              <button
-                onClick={handleSignOut}
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                <ArrowRightOnRectangleIcon className="h-4 w-4 mr-1" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </header>
-
+        {/* Removed the header with Navigation since it's now in the root layout */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg p-6 mb-8 text-white`}>
             <h2 className="text-2xl font-bold mb-2">Welcome to Your Dashboard</h2>
