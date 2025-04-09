@@ -47,7 +47,7 @@ export default function Home() {
     setOutput('');
     
     try {
-      const result = await executeCode(code, selectedLanguage.id);
+      const result = await executeCode(code, selectedLanguage.id, stdin);
       setOutput(result);
     } catch (error) {
       setOutput(`Error: ${error instanceof Error ? error.message : String(error)}`);

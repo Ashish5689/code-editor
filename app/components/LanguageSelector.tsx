@@ -26,10 +26,10 @@ const LanguageSelector = ({
     <div className="w-auto">
       <Listbox value={selectedLanguage} onChange={onLanguageChange}>
         <div className="relative">
-          <Listbox.Button className="relative cursor-pointer rounded-lg glass-dark py-1.5 pl-3 pr-8 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-300 sm:text-sm border border-gray-700/30 transition-all hover:border-blue-500/50">
+          <Listbox.Button className="relative cursor-pointer rounded-lg glass-dark py-1.5 pl-3 pr-8 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-300 sm:text-sm border border-gray-700/30 transition-all hover:border-blue-500/50 min-w-[120px]">
             <div className="flex items-center">
               <CodeBracketIcon className="h-4 w-4 mr-2 text-blue-400 flex-shrink-0" />
-              <span className="block truncate font-medium">{selectedLanguage.name}</span>
+              <span className="block truncate font-medium min-w-[60px]">{selectedLanguage.name}</span>
             </div>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon
@@ -44,7 +44,7 @@ const LanguageSelector = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md glass-dark py-1 text-base shadow-lg ring-1 ring-black/5 ring-opacity-5 focus:outline-none sm:text-sm backdrop-blur-lg border border-gray-700/30">
+            <Listbox.Options className="absolute z-10 mt-1 max-h-60 min-w-[120px] w-full overflow-auto rounded-md glass-dark py-1 text-base shadow-lg ring-1 ring-black/5 ring-opacity-5 focus:outline-none sm:text-sm backdrop-blur-lg border border-gray-700/30">
               {languages.map((language) => (
                 <Listbox.Option
                   key={language.id}

@@ -117,7 +117,14 @@ console.log(greeting);
 
 // You can also try:
 const name: string = "Code Surfer";
-console.log(\`Welcome to \${name}!\`);`;
+console.log(\`Welcome to \${name}!\`);
+
+// This function shows type annotations
+function greet(person: string, date: Date): void {
+  console.log(\`Hello \${person}, today is \${date.toDateString()}!\`);
+}
+
+greet("TypeScript User", new Date());`;
 
     case 'csharp':
       return `// C# Hello World
