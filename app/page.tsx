@@ -7,6 +7,7 @@ import LanguageSelector from './components/LanguageSelector';
 import { SUPPORTED_LANGUAGES, getDefaultCode } from './utils/codeTemplates';
 import { executeCode } from './services/codeExecutionService';
 import { PlayIcon, DocumentDuplicateIcon, ArrowPathIcon, ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home({ initialShowEditor = false }: { initialShowEditor?: boolean }) {
@@ -172,15 +173,18 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
       {/* Header removed as it's now in the root layout via NavigationWrapper */}
       
       <main className="container mx-auto px-4 py-6">
-        <div className="flex flex-col space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-            <LanguageSelector
-              languages={SUPPORTED_LANGUAGES}
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={handleLanguageChange}
-            />
+        <div className="flex flex-col space-y-4 mb-4">
+          {/* Editor Controls - Improved layout */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="w-full sm:w-64">
+              <LanguageSelector
+                languages={SUPPORTED_LANGUAGES}
+                selectedLanguage={selectedLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
+            </div>
             
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleRunCode}
                 disabled={isExecuting}
@@ -213,45 +217,57 @@ export default function Home({ initialShowEditor = false }: { initialShowEditor?
                 <ArrowDownTrayIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">Download</span>
               </button>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
-            <div className="h-full overflow-hidden">
-              <CodeEditor
-                language={selectedLanguage.value}
-                value={code}
-                onChange={(value) => setCode(value || '')}
-                theme={editorTheme}
-              />
-            </div>
-            
-            <div className="h-full flex flex-col overflow-hidden">
-              <div className="flex-1 min-h-0">
-                <OutputConsole output={output} isLoading={isExecuting} />
-              </div>
-              
-              {showStdin && (
-                <div className="mt-4 max-h-[30%]">
-                  <div className="bg-gray-800/50 px-4 py-2 font-medium rounded-t-md border-t border-l border-r border-gray-700/30">
-                    Standard Input
-                  </div>
-                  <textarea
-                    value={stdin}
-                    onChange={(e) => setStdin(e.target.value)}
-                    className="w-full h-32 bg-gray-900/60 text-white font-mono p-4 rounded-b-md resize-none border-b border-l border-r border-gray-700/30"
-                    placeholder="Enter input for your program here..."
-                  />
-                </div>
-              )}
               
               <button
-                onClick={() => setShowStdin(!showStdin)}
-                className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors self-start"
+                onClick={toggleTheme}
+                className="p-1.5 rounded-md bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors shadow-md"
+                title={editorTheme === 'vs-dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
               >
-                {showStdin ? 'Hide stdin' : 'Show stdin'}
+                {editorTheme === 'vs-dark' ? (
+                  <SunIcon className="h-5 w-5" />
+                ) : (
+                  <MoonIcon className="h-5 w-5" />
+                )}
               </button>
             </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
+          <div className="h-full overflow-hidden">
+            <CodeEditor
+              language={selectedLanguage.value}
+              value={code}
+              onChange={(value) => setCode(value || '')}
+              theme={editorTheme}
+            />
+          </div>
+          
+          <div className="h-full flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0">
+              <OutputConsole output={output} isLoading={isExecuting} />
+            </div>
+            
+            {showStdin && (
+              <div className="mt-4 max-h-[30%]">
+                <div className="bg-gray-800/50 px-4 py-2 font-medium rounded-t-md border-t border-l border-r border-gray-700/30">
+                  Standard Input
+                </div>
+                <textarea
+                  value={stdin}
+                  onChange={(e) => setStdin(e.target.value)}
+                  className="w-full h-32 bg-gray-900/60 text-white font-mono p-4 rounded-b-md resize-none border-b border-l border-r border-gray-700/30"
+                  placeholder="Enter input for your program here..."
+                />
+              </div>
+            )}
+            
+            <button
+              onClick={() => setShowStdin(!showStdin)}
+              className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors self-start"
+            >
+              {showStdin ? 'Hide stdin' : 'Show stdin'}
+            </button>
           </div>
         </div>
       </main>
