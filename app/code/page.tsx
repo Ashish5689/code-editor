@@ -40,11 +40,8 @@ export default function CodePage() {
     const startTime = performance.now();
     
     try {
-      // Show loading message for WebAssembly-based languages that might need extra loading time
-      if (['python', 'c', 'cpp', 'java', 'ruby'].includes(selectedLanguage.id)) {
-        setOutput('Preparing execution environment...');
-        setIsLoadingWasm(true);
-      }
+      // Show a loading message while Judge0 processes the code
+      setOutput('Executing code with Judge0...');
       
       const result = await executeCode(code, selectedLanguage.id, stdin);
       setOutput(result);

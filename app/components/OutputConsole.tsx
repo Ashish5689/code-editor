@@ -6,7 +6,7 @@ import { ArrowPathIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24
 interface OutputConsoleProps {
   output: string;
   isLoading: boolean;
-  isLoadingWasm?: boolean;
+  isLoadingWasm?: boolean; // Keeping for backward compatibility, but we'll use it for Judge0 loading
 }
 
 const OutputConsole = ({ output, isLoading, isLoadingWasm = false }: OutputConsoleProps) => {
@@ -37,7 +37,7 @@ const OutputConsole = ({ output, isLoading, isLoadingWasm = false }: OutputConso
           )}
         </div>
         <div className="text-xs text-gray-400">
-          {isLoadingWasm ? 'Loading WebAssembly...' : isLoading ? 'Processing...' : 'Ready'}
+          {isLoadingWasm ? 'Connecting to Judge0...' : isLoading ? 'Processing...' : 'Ready'}
         </div>
       </div>
       <div
@@ -48,9 +48,9 @@ const OutputConsole = ({ output, isLoading, isLoadingWasm = false }: OutputConso
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-2"></div>
-              <span className="text-purple-400">Loading WebAssembly runtime...</span>
+              <span className="text-purple-400">Connecting to Judge0 API...</span>
               <p className="text-gray-400 text-sm mt-2 text-center">
-                This may take a moment for the first run
+                Submitting your code to the remote execution service
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@ const OutputConsole = ({ output, isLoading, isLoadingWasm = false }: OutputConso
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
-              <span className="text-blue-400">Executing code...</span>
+              <span className="text-blue-400">Executing code on Judge0...</span>
             </div>
           </div>
         ) : output ? (

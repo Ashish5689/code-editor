@@ -1,225 +1,213 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-import * as util from 'util';
+import axios from 'axios';
 
-const execPromise = util.promisify(exec);
+// Map of language names to Piston language IDs
+const languageToPistonId: Record<string, string> = {
+  'javascript': 'nodejs',
+  'typescript': 'typescript',
+  'python': 'python3',
+  'python2': 'python2',
+  'java': 'java',
+  'c': 'c',
+  'cpp': 'cpp',
+  'csharp': 'csharp',
+  'ruby': 'ruby',
+  'go': 'go',
+  'rust': 'rust',
+  'php': 'php',
+  'swift': 'swift',
+  'kotlin': 'kotlin'
+};
 
-// Function to create a temporary directory and file
-async function createTempFile(code: string, language: string): Promise<{filePath: string, dirPath: string}> {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'code-'));
-  let filename = '';
-  
-  switch(language) {
-    case 'javascript':
-      filename = 'program.js';
-      break;
-    case 'typescript':
-      filename = 'program.ts';
-      // Create a basic tsconfig.json in the temp directory
-      const tsConfig = {
-        compilerOptions: {
-          target: "es2016",
-          module: "commonjs",
-          esModuleInterop: true,
-          forceConsistentCasingInFileNames: true,
-          strict: true,
-          skipLibCheck: true
-        }
-      };
-      await fs.promises.writeFile(
-        path.join(tempDir, 'tsconfig.json'),
-        JSON.stringify(tsConfig, null, 2)
-      );
-      break;
-    case 'python':
-      filename = 'program.py';
-      break;
-    case 'java':
-      // For Java, extract the public class name from the code
-      const publicClassMatch = code.match(/public\s+class\s+(\w+)/);
-      if (publicClassMatch && publicClassMatch[1]) {
-        filename = `${publicClassMatch[1]}.java`;
-      } else {
-        // Default to Main.java if no public class is found
-        filename = 'Main.java';
-      }
-      break;
-    case 'c':
-      filename = 'program.c';
-      break;
-    case 'cpp':
-      filename = 'program.cpp';
-      break;
-    case 'csharp':
-      filename = 'program.cs';
-      break;
-    case 'ruby':
-      filename = 'program.rb';
-      break;
-    default:
-      filename = 'program.txt';
-  }
-  
-  const filePath = path.join(tempDir, filename);
-  await fs.promises.writeFile(filePath, code);
-  
-  return { filePath, dirPath: tempDir };
-}
+// Map of language IDs to their versions in Piston
+const languageVersions: Record<string, string> = {
+  'nodejs': '18.15.0',
+  'typescript': '5.0.3',
+  'python3': '3.10.0',
+  'python2': '2.7.18',
+  'java': '19.0.2',
+  'c': '10.2.0',
+  'cpp': '10.2.0',
+  'csharp': '6.12.0',
+  'ruby': '3.2.1',
+  'go': '1.20.2',
+  'rust': '1.68.2',
+  'php': '8.2.3',
+  'swift': '5.8',
+  'kotlin': '1.8.10'
+};
 
-// Helper function to check if a command is available
-async function isCommandAvailable(command: string): Promise<boolean> {
+// Function to execute code using Piston API
+async function executeCodeWithPiston(code: string, language: string, input: string = ''): Promise<string> {
   try {
-    await execPromise(`which ${command}`);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-// Function to execute code based on language
-async function executeCode(filePath: string, language: string, input: string = ''): Promise<string> {
-  let cmd = '';
-  const dirPath = path.dirname(filePath);
-  const timeoutMs = 10000; // 10 second timeout for execution
-  
-  try {
-    switch(language) {
-      case 'javascript':
-        // Check if Node.js is installed
-        if (!(await isCommandAvailable('node'))) {
-          return "Node.js is not installed on the server. To run JavaScript code, you need to install Node.js.";
-        }
-        cmd = `node "${filePath}"`;
-        break;
-      case 'typescript':
-        // Since we're having issues with npx tsc, let's use a simpler approach
-        // Create a transpiled JS version by stripping type annotations
-        try {
-          const tsCode = await fs.promises.readFile(filePath, 'utf8');
-          // Basic TypeScript to JavaScript conversion by stripping type annotations
-          const jsCode = tsCode
-            .replace(/:\s*(string|number|boolean|any|void|Date|RegExp)\s*([,=;)])/g, '$2')
-            .replace(/function\s+\w+\([^)]*\):\s*\w+\s*{/g, (match) => match.replace(/:\s*\w+\s*{/, ' {'))
-            .replace(/<[^>]+>/g, '')
-            .replace(/interface\s+\w+\s*\{[^}]*\}/g, '')
-            .replace(/type\s+\w+\s*=\s*[^;]*;/g, '');
-          
-          const jsFilePath = filePath.replace('.ts', '.js');
-          await fs.promises.writeFile(jsFilePath, jsCode);
-          cmd = `node "${jsFilePath}"`;
-        } catch (error: any) {
-          return `TypeScript Error: ${error.message}`;
-        }
-        break;
-      case 'python':
-        // Check if Python is installed
-        if (!(await isCommandAvailable('python3'))) {
-          return "Python 3 is not installed on the server. To run Python code, you need to install Python 3.";
-        }
-        cmd = `python3 "${filePath}"`;
-        break;
-      case 'java':
-        // Check if Java is installed
-        if (!(await isCommandAvailable('javac'))) {
-          return "Java is not installed on the server. To run Java code, you need to install JDK.";
-        }
-        // Compile Java first, then run
-        try {
-          await execPromise(`javac "${filePath}"`);
-        } catch (error: any) {
-          return `Compilation Error: ${error.stderr || error.message}`;
-        }
-        // Extract class name from file path (without .java extension)
-        const className = path.basename(filePath, '.java');
-        cmd = `java -cp "${dirPath}" ${className}`;
-        break;
-      case 'c':
-        // Check if gcc is installed
-        if (!(await isCommandAvailable('gcc'))) {
-          return "GCC is not installed on the server. To run C code, you need to install GCC.";
-        }
-        // Compile C, then run
-        const cOutput = path.join(dirPath, 'program');
-        try {
-          await execPromise(`gcc "${filePath}" -o "${cOutput}"`);
-        } catch (error: any) {
-          return `Compilation Error: ${error.stderr || error.message}`;
-        }
-        cmd = `"${cOutput}"`;
-        break;
-      case 'cpp':
-        // Check if g++ is installed
-        if (!(await isCommandAvailable('g++'))) {
-          return "G++ is not installed on the server. To run C++ code, you need to install G++.";
-        }
-        // Compile C++, then run
-        const cppOutput = path.join(dirPath, 'program');
-        try {
-          await execPromise(`g++ "${filePath}" -o "${cppOutput}"`);
-        } catch (error: any) {
-          return `Compilation Error: ${error.stderr || error.message}`;
-        }
-        cmd = `"${cppOutput}"`;
-        break;
-      case 'csharp':
-        // For C#, return a more user-friendly message about installation requirements
-        return `C# execution requires the .NET SDK to be installed on the server.
-To run C# code locally, you need to install:
-1. .NET SDK: https://dotnet.microsoft.com/download
-2. Then run: dotnet build your-file.cs && dotnet run
-
-For now, here's your code:
-\`\`\`csharp
-${await fs.promises.readFile(filePath, 'utf8')}
-\`\`\``;
-      case 'ruby':
-        // Check if Ruby is installed
-        if (!(await isCommandAvailable('ruby'))) {
-          return "Ruby is not installed on the server. To run Ruby code, you need to install Ruby.";
-        }
-        cmd = `ruby "${filePath}"`;
-        break;
-      default:
-        throw new Error(`Unsupported language: ${language}`);
+    // Skip execution for JavaScript and TypeScript as they'll be handled client-side
+    if (language === 'javascript' || language === 'typescript') {
+      return `For ${language}, execution happens in the browser console. Check your browser's console output.`;
     }
     
-    // Add any input through stdin if provided
-    const inputOption = input ? { input } : {};
-    const { stdout, stderr } = await execPromise(cmd, { 
-      timeout: timeoutMs,
-      ...inputOption
+    const languageId = languageToPistonId[language];
+    
+    if (!languageId) {
+      return `Language '${language}' is not supported by Piston.`;
+    }
+    
+    console.log(`Using Piston API at: https://emkc.org/api/v2/piston/execute`);
+    console.log(`Executing ${language} code with language_id: ${languageId}`);
+    
+    // Process code based on language requirements
+    let processedCode = code;
+    
+    // Language-specific processing
+    if (languageId === 'java') {
+      // Check if there's a public class that's not named Main
+      const classMatch = code.match(/public\s+class\s+(\w+)/);
+      if (classMatch && classMatch[1] !== 'Main') {
+        // Replace the class name with Main
+        processedCode = code.replace(/public\s+class\s+\w+/, 'public class Main');
+        console.log('Renamed Java class to Main');
+      } else if (!classMatch) {
+        // If no public class is found, wrap the code in a Main class
+        processedCode = `
+public class Main {
+    public static void main(String[] args) {
+        ${code}
+    }
+}`;
+        console.log('Wrapped Java code in Main class');
+      }
+    }
+    
+    // Get the specific version for this language
+    const version = languageVersions[languageId] || ''; 
+    
+    // Create the submission payload
+    const payload = {
+      language: languageId,
+      version: version,
+      files: [
+        {
+          name: getFilenameForLanguage(languageId),
+          content: processedCode
+        }
+      ],
+      stdin: input || '',
+      args: [],
+      compile_timeout: 10000,
+      run_timeout: 5000,
+      compile_memory_limit: -1,
+      run_memory_limit: -1
+    };
+    
+    console.log('Submission payload:', JSON.stringify({...payload, files: [{...payload.files[0], content: '...content...'}]})); // Log without huge code content
+    
+    // Create a submission
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     
-    if (stderr && stderr.trim().length > 0) {
-      return `Runtime Error: ${stderr}`;
-    }
+    console.log('Piston response:', response.data);
     
-    return stdout || 'Program executed successfully, but no output was produced.';
-  } catch (error: any) {
-    if (error.killed && error.signal === 'SIGTERM') {
-      return 'Error: Execution timed out. Your program took too long to complete.';
-    } else if (error.stderr) {
-      return `Runtime Error: ${error.stderr}`;
+    if (response.data.run) {
+      // Check for errors
+      if (response.data.run.stderr) {
+        return `Runtime Error: ${response.data.run.stderr}`;
+      }
+      
+      // Check for compilation errors
+      if (response.data.compile && response.data.compile.stderr) {
+        return `Compilation Error: ${response.data.compile.stderr}`;
+      }
+      
+      // Return the output
+      return response.data.run.stdout || 'Program executed successfully, but no output was produced.';
+    } else {
+      return 'Error: Failed to execute code with Piston API.';
     }
-    return `Error: ${error.message || 'Unknown error occurred'}`;
+  } catch (error) {
+    console.error('Error executing code with Piston:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', error.response?.data);
+      return `Piston API Error: ${error.response?.data?.message || error.message || 'Unknown error'}`;
+    }
+    return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
   }
 }
 
-// Function to clean up temporary files
-async function cleanupTempFiles(dirPath: string): Promise<void> {
+// Helper function to get the appropriate filename for each language
+function getFilenameForLanguage(language: string): string {
+  const filenameMap: Record<string, string> = {
+    'nodejs': 'script.js',
+    'typescript': 'script.ts',
+    'python3': 'script.py',
+    'python2': 'script.py',
+    'java': 'Main.java',
+    'c': 'main.c',
+    'cpp': 'main.cpp',
+    'csharp': 'Main.cs',
+    'ruby': 'script.rb',
+    'go': 'main.go',
+    'rust': 'main.rs',
+    'php': 'script.php',
+    'swift': 'main.swift',
+    'kotlin': 'Main.kt'
+  };
+  
+  return filenameMap[language] || 'code.txt';
+}
+
+// Fallback function to simulate output for common code patterns
+function getFallbackOutput(code: string, language: string): string {
   try {
-    await fs.promises.rm(dirPath, { recursive: true, force: true });
+    // Simple pattern matching for common output patterns
+    if (language === 'python') {
+      // Match print statements in Python
+      const printMatches = code.match(/print\s*\((["'].*?["'])\)/g);
+      if (printMatches) {
+        return printMatches
+          .map(match => {
+            // Extract the string inside the print statement
+            const stringMatch = match.match(/print\s*\((["'])(.*?)\1\)/);
+            return stringMatch ? stringMatch[2] : '';
+          })
+          .join('\n');
+      }
+    } else if (language === 'javascript') {
+      // Match console.log statements in JavaScript
+      const logMatches = code.match(/console\.log\s*\((["'].*?["'])\)/g);
+      if (logMatches) {
+        return logMatches
+          .map(match => {
+            // Extract the string inside the console.log statement
+            const stringMatch = match.match(/console\.log\s*\((["'])(.*?)\1\)/);
+            return stringMatch ? stringMatch[2] : '';
+          })
+          .join('\n');
+      }
+    } else if (language === 'java') {
+      // Match System.out.println statements in Java
+      const printMatches = code.match(/System\.out\.println\s*\((["'].*?["'])\)/g);
+      if (printMatches) {
+        return printMatches
+          .map(match => {
+            // Extract the string inside the println statement
+            const stringMatch = match.match(/System\.out\.println\s*\((["'])(.*?)\1\)/);
+            return stringMatch ? stringMatch[2] : '';
+          })
+          .join('\n');
+      }
+    }
+    
+    // If no patterns match, return a generic message
+    return "(Fallback output simulation not available for this code)";
   } catch (error) {
-    console.error('Failed to clean up temporary files:', error);
+    console.error('Error in fallback output generation:', error);
+    return "(Error generating fallback output)";
   }
 }
 
 export async function POST(request: NextRequest) {
-  let tempDirPath = '';
-  
   try {
     const { code, language, input } = await request.json();
 
@@ -230,38 +218,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // For JavaScript, we can handle it without creating temp files
-    if (language === 'javascript') {
-      // Browser-side execution is already handled in the client
-      // This is just a fallback for server-side execution
-      const { filePath, dirPath } = await createTempFile(code, language);
-      tempDirPath = dirPath;
-      const output = await executeCode(filePath, language, input || '');
-      return NextResponse.json({ output });
-    }
+    console.log(`Received request to execute ${language} code`);
     
-    // For other languages, create temporary files and execute
-    const { filePath, dirPath } = await createTempFile(code, language);
-    tempDirPath = dirPath;
+    // Execute code using Piston
+    const output = await executeCodeWithPiston(code, language, input || '');
     
-    // If input is provided for languages that need stdin files
-    if (input && ['c', 'cpp', 'python', 'ruby'].includes(language)) {
-      // Create input file for languages that don't handle stdin well
-      const inputFilePath = path.join(dirPath, 'input.txt');
-      await fs.promises.writeFile(inputFilePath, input);
-    }
-    
-    const output = await executeCode(filePath, language, input || '');
-    
-    // If we get an error about language not being installed, suggest client-side WebAssembly alternative
-    if (output.includes("is not installed on the server")) {
-      // Suggest client-side WebAssembly alternative
-      return NextResponse.json({ 
-        output: output,
-        useClientFallback: true,
-        language: language
-      });
-    }
+    console.log(`Execution completed. Output length: ${output.length}`);
     
     return NextResponse.json({ output });
   } catch (error) {
@@ -270,10 +232,5 @@ export async function POST(request: NextRequest) {
       { error: 'Failed to execute code: ' + (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     );
-  } finally {
-    // Clean up temporary files
-    if (tempDirPath) {
-      await cleanupTempFiles(tempDirPath);
-    }
   }
 }
