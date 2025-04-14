@@ -305,53 +305,6 @@ export default function CodePage() {
                 isLoadingWasm={isLoadingWasm}
               />
             </div>
-            
-            <div className="flex justify-between p-2 border-t border-gray-700">
-              <div className="flex space-x-1">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleRunCode}
-                  disabled={isExecuting}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-md transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <PlayIcon className="h-5 w-5" />
-                  <span>Run</span>
-                </motion.button>
-              </div>
-              
-              <div className="flex space-x-1">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCopyCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <DocumentDuplicateIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Copy</span>
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleResetCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <ArrowPathIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Reset</span>
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleDownloadCode}
-                  className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-3 py-2 rounded-md transition-colors shadow-md"
-                >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                  <span className="hidden sm:inline">Download</span>
-                </motion.button>
-              </div>
-            </div>
           </div>
         </div>
       </main>
